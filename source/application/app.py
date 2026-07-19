@@ -240,7 +240,7 @@ class XHS:
     container["时间戳"],
                 )
 
-                container["文件路径"] = str(path)
+                container["文件路径"] = result
                 
                 if not result:
                     count.skip += 1
