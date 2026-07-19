@@ -228,17 +228,20 @@ class XHS:
                 self.logging(_("作品 {0} 存在下载记录，跳过下载").format(i))
                 count.skip += 1
             else:
-                __, result = await self.download.run(
-                    u,
-                    container["动图地址"],
-                    index,
-                    container["作者ID"]
-                    + "_"
-                    + self.CLEANER.filter_name(container["作者昵称"]),
-                    name,
-                    container["作品类型"],
-                    container["时间戳"],
+                path, result = await self.download.run(
+                   u,
+    container["动图地址"],
+    index,
+    container["作者ID"]
+    + "_"
+    + self.CLEANER.filter_name(container["作者昵称"]),
+    name,
+    container["作品类型"],
+    container["时间戳"],
                 )
+
+                container["文件路径"] = str(path)
+                
                 if not result:
                     count.skip += 1
                 elif all(result):
