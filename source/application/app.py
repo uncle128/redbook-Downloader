@@ -901,11 +901,11 @@ class XHS:
                 bool(data),
                 return_data,
             ):
-                case (True, True):
-                    return {
-                        "message": msg + ", " + _("作品文件下载任务执行完毕"),
-                        "data": data,
-                    }
+               case (True, True):
+                 return FileResponse(
+                 path=data["文件路径"][0],
+                media_type="image/jpeg"
+    )
                 case (True, False):
                     return {
                         "message": _("作品文件下载任务执行完毕"),
