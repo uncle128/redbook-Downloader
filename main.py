@@ -17,7 +17,7 @@ async def app():
 
 async def api_server(
     host="0.0.0.0",
-    port=int(os.getenv("PORT", 5556)),
+    port=int(os.getenv("PORT", 8080)),
     log_level="info",
 ):
     async with XHS(**Settings().run()) as xhs:
@@ -31,7 +31,7 @@ async def api_server(
 async def mcp_server(
     transport="streamable-http",
     host="0.0.0.0",
-    port=int(os.getenv("PORT", 5556)),
+    port=int(os.getenv("PORT", 8080)),
     log_level="INFO",
 ):
     async with XHS(**Settings().run()) as xhs:
