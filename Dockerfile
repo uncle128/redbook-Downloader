@@ -40,8 +40,5 @@ COPY main.py /app/main.py
 # 暴露端口
 EXPOSE 5556
 
-# 创建挂载点
-VOLUME /app/Volume
-
 # 设置容器启动命令
 CMD ["python", "main.py"]
