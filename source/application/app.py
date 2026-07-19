@@ -241,6 +241,7 @@ class XHS:
                 )
 
                 container["文件路径"] = result
+                print("下载结果:", result)
                 
                 if not result:
                     count.skip += 1
