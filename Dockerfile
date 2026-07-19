@@ -41,4 +41,4 @@ COPY main.py /app/main.py
 EXPOSE 5556
 
 # 设置容器启动命令
-CMD ["python", "main.py"]
+CMD ["python", "main.py", "API"]
