@@ -246,7 +246,7 @@ class Download:
                 )
                 # self.__create_progress(bar, None)
                 logging(self.print, _("文件 {0} 下载成功").format(real.name))
-                return True
+                return str(real)
             except HTTPError as error:
                 # self.__create_progress(bar, None)
                 logging(
