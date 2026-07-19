@@ -1,3 +1,4 @@
+import os
 from asyncio import run
 from asyncio.exceptions import CancelledError
 from contextlib import suppress
@@ -16,7 +17,7 @@ async def app():
 
 async def api_server(
     host="0.0.0.0",
-    port=5556,
+    port=int(os.getenv("PORT", 5556)),
     log_level="info",
 ):
     async with XHS(**Settings().run()) as xhs:
@@ -30,7 +31,7 @@ async def api_server(
 async def mcp_server(
     transport="streamable-http",
     host="0.0.0.0",
-    port=5556,
+    port=int(os.getenv("PORT", 5556)),
     log_level="INFO",
 ):
     async with XHS(**Settings().run()) as xhs:
