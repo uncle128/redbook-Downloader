@@ -14,7 +14,7 @@ from re import compile
 from urllib.parse import urlparse
 from textwrap import dedent
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.responses import RedirectResponse
 from fastmcp import FastMCP
 from typing import Annotated
 from pydantic import Field
@@ -881,62 +881,55 @@ class XHS:
                 "openWorldHint": True,
             },
         )
-async def download_detail(
-    self,
-    url: Annotated[str, Field(description=_("小红书作品链接"))],
-    index: Annotated[
-        list[str | int] | None,
-        Field(
-            default=None,
-            description=_("指定需要下载的图文作品序号")
-        ),
-    ],
-    return_data: Annotated[
-        bool,
-        Field(
-            default=False,
-            description=_("是否需要返回作品信息数据")
-        ),
-    ],
-) -> dict:
-
-    msg, data = await self.deal_detail_mcp(
-        url,
-        True,
-        index,
-    )
-
-    # 下载成功
-    if data:
-
-        # 如果需要返回作品信息
-        if return_data:
-            return {
-                "message": msg,
-                "data": data,
-            }
-
-        # 直接返回图片文件
-        file_path = data.get("文件路径", [])
-
-        if file_path:
-            return FileResponse(
-                path=file_path[0],
-                media_type="image/jpeg",
-                filename="xiaohongshu.jpg",
+        async def download_detail(
+            url: Annotated[str, Field(description=_("小红书作品链接"))],
+            index: Annotated[
+                list[str | int] | None,
+                Field(default=None, description=_("指定需要下载的图文作品序号")),
+            ],
+            return_data: Annotated[
+                bool,
+                Field(default=False, description=_("是否需要返回作品信息数据")),
+            ],
+        ) -> dict:
+            msg, data = await self.deal_detail_mcp(
+                url,
+                True,
+                index,
             )
+            match (
+                bool(data),
+                return_data,
+            ):
+                case (True, True):
+                    return {
+                        "message": msg + ", " + _("作品文件下载任务执行完毕"),
+                        "data": data,
+                    }
+                case (True, False):
+                    return {
+                        "message": _("作品文件下载任务执行完毕"),
+                        "data": None,
+                    }
+                case (False, True):
+                    return {
+                        "message": msg + ", " + _("作品文件下载任务未执行"),
+                        "data": None,
+                    }
+                case (False, False):
+                    return {
+                        "message": msg + ", " + _("作品文件下载任务未执行"),
+                        "data": None,
+                    }
+                case _:
+                    raise ValueError
 
-        return {
-            "message": "文件不存在",
-            "data": None,
-        }
-
-
-    # 下载失败
-    return {
-        "message": msg,
-        "data": None,
-    }
+        await mcp.run_async(
+            transport=transport,
+            host=host,
+            port=port,
+            log_level=log_level,
+        )
 
     async def deal_detail_mcp(
         self,
