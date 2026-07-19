@@ -14,7 +14,7 @@ from re import compile
 from urllib.parse import urlparse
 from textwrap import dedent
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
 from fastmcp import FastMCP
 from typing import Annotated
 from pydantic import Field
@@ -897,32 +897,24 @@ class XHS:
                 True,
                 index,
             )
-            match (
-                bool(data),
-                return_data,
-            ):
-               case (True, True):
-                 return FileResponse(
-                 path=data["文件路径"][0],
-                media_type="image/jpeg"
+ if data:
+
+    if return_data:
+        return {
+            "message": msg,
+            "data": data,
+        }
+
+    return FileResponse(
+        path=data["文件路径"][0],
+        media_type="image/jpeg",
+        filename="xiaohongshu.jpg"
     )
-                case (True, False):
-                    return {
-                        "message": _("作品文件下载任务执行完毕"),
-                        "data": None,
-                    }
-                case (False, True):
-                    return {
-                        "message": msg + ", " + _("作品文件下载任务未执行"),
-                        "data": None,
-                    }
-                case (False, False):
-                    return {
-                        "message": msg + ", " + _("作品文件下载任务未执行"),
-                        "data": None,
-                    }
-                case _:
-                    raise ValueError
+
+return {
+    "message": msg,
+    "data": None,
+}
 
         await mcp.run_async(
             transport=transport,
