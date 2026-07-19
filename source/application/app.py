@@ -881,47 +881,62 @@ class XHS:
                 "openWorldHint": True,
             },
         )
-        async def download_detail(
-            url: Annotated[str, Field(description=_("小红书作品链接"))],
-            index: Annotated[
-                list[str | int] | None,
-                Field(default=None, description=_("指定需要下载的图文作品序号")),
-            ],
-            return_data: Annotated[
-                bool,
-                Field(default=False, description=_("是否需要返回作品信息数据")),
-            ],
-        ) -> dict:
-            msg, data = await self.deal_detail_mcp(
-                url,
-                True,
-                index,
-            )
- if data:
+async def download_detail(
+    self,
+    url: Annotated[str, Field(description=_("小红书作品链接"))],
+    index: Annotated[
+        list[str | int] | None,
+        Field(
+            default=None,
+            description=_("指定需要下载的图文作品序号")
+        ),
+    ],
+    return_data: Annotated[
+        bool,
+        Field(
+            default=False,
+            description=_("是否需要返回作品信息数据")
+        ),
+    ],
+) -> dict:
 
-    if return_data:
-        return {
-            "message": msg,
-            "data": data,
-        }
-
-    return FileResponse(
-        path=data["文件路径"][0],
-        media_type="image/jpeg",
-        filename="xiaohongshu.jpg"
+    msg, data = await self.deal_detail_mcp(
+        url,
+        True,
+        index,
     )
 
-return {
-    "message": msg,
-    "data": None,
-}
+    # 下载成功
+    if data:
 
-        await mcp.run_async(
-            transport=transport,
-            host=host,
-            port=port,
-            log_level=log_level,
-        )
+        # 如果需要返回作品信息
+        if return_data:
+            return {
+                "message": msg,
+                "data": data,
+            }
+
+        # 直接返回图片文件
+        file_path = data.get("文件路径", [])
+
+        if file_path:
+            return FileResponse(
+                path=file_path[0],
+                media_type="image/jpeg",
+                filename="xiaohongshu.jpg",
+            )
+
+        return {
+            "message": "文件不存在",
+            "data": None,
+        }
+
+
+    # 下载失败
+    return {
+        "message": msg,
+        "data": None,
+    }
 
     async def deal_detail_mcp(
         self,
